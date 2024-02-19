@@ -1,0 +1,6 @@
+**/build
+quartusProjSW*
+PLLJ_PLLSPE_INFO.txt
+db/
+incremental_db/
+*.v.bak
