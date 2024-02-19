@@ -9,7 +9,8 @@ module main(
 	
 	input GPIO_2_7,	//RST-Reset
 
-    input GPIO_0_7,    //USB COM Module TX
+    input GPIO_0_7,     //USB COM Module TX
+    output GPIO_0_6,    //USB COM Module RX
 	
 	output GPIO_2_8,
 	output GPIO_2_10,
@@ -30,13 +31,16 @@ module main(
 	
     //Generate a 9600 BAUD via a 50MHz clock
     reg [12:0] uart_counter;
-    wire clk_UART;
-	assign clk_UART = uart_counter < 13'd2604;
+    reg clk_UART;
 	always @(posedge clk_50) begin
         if (uart_counter >= 13'd5207)
-            uart_counter = 13'd0;
+            uart_counter <= 13'd0;
         else
     		uart_counter <= uart_counter + 13'd1;
+		if (uart_counter < 13'd2604)
+			clk_UART <= 1'b1;
+		else
+			clk_UART <= 1'b0;
 	end
 	
     wire [7:0] debug_LEDs;
@@ -57,6 +61,32 @@ module main(
         UART_RX_Data,   //8-Bit byte
         UART_RX_new     //New data flag
         );
+    assign debug_LEDs = UART_RX_Data;
 
-    assign debug_LEDs = UART_RX_Data;	
+    reg uart_tx_send;
+    wire uart_tx_busy;
+    reg [7:0] uart_tx_data;
+    UART_TX instUART_TX(
+        clk_50,         //Main global clock
+        clk_UART,       //Clock divided UART-clock phase-synchronous with Clk
+        uart_tx_send,   //Send data flag
+        uart_tx_data,   //8-Bit byte of data to send
+        uart_tx_busy,   //Busy flag
+        GPIO_0_6        //Output UART serial data stream
+        );
+
+    reg last_RX_flag;
+    always @(posedge clk_50) begin
+        last_RX_flag <= UART_RX_new;
+        if (UART_RX_new == 1'b1 && last_RX_flag == 1'b0) begin
+            if (UART_RX_Data == 8'b01010101) begin   //'U'
+                uart_tx_data <= 8'd80;
+                uart_tx_send <= 1'b1;
+            end
+            else
+                uart_tx_send <= 1'b0;
+        end
+        else
+            uart_tx_send <= 1'b0;
+    end
 endmodule

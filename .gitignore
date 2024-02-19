@@ -4,3 +4,8 @@ PLLJ_PLLSPE_INFO.txt
 db/
 incremental_db/
 *.v.bak
+simulation/
+output_files/
+CLOCK_PLL_bb.v
+*.ppf
+greybox_tmp/
