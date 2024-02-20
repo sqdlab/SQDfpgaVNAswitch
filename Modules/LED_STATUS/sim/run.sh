@@ -1,3 +1,3 @@
 cd build
-./VUART_TX
+./VLED_STATUS
 gtkwave waves.vcd

@@ -11,7 +11,10 @@ module main(
 
     input GPIO_0_7,     //USB COM Module TX
     output GPIO_0_6,    //USB COM Module RX
-	
+
+    output GPIO_0_8,    //Status Panel LED
+
+
 	output GPIO_2_8,
 	output GPIO_2_10,
 	output GPIO_2_12,
@@ -62,6 +65,8 @@ module main(
         UART_RX_new     //New data flag
         );
     assign debug_LEDs = UART_RX_Data;
+	 
+    reg [1:0] switch_state;
 
     reg uart_tx_send;
     wire uart_tx_busy;
@@ -79,14 +84,35 @@ module main(
     always @(posedge clk_50) begin
         last_RX_flag <= UART_RX_new;
         if (UART_RX_new == 1'b1 && last_RX_flag == 1'b0) begin
-            if (UART_RX_Data == 8'b01010101) begin   //'U'
+            if (UART_RX_Data == 8'b01010101)   //'U'
+                begin
                 uart_tx_data <= 8'd80;
                 uart_tx_send <= 1'b1;
-            end
+                switch_state <= 2'd0;
+                end
+            else if (UART_RX_Data == 8'b01101010)   //'j'
+                begin
+                uart_tx_data <= 8'd82;
+                uart_tx_send <= 1'b1;
+                switch_state <= 2'd1;
+                end
+            else if (UART_RX_Data == 8'b01100110)   //'f'
+                begin
+                uart_tx_data <= 8'd83;
+                uart_tx_send <= 1'b1;
+                switch_state <= 2'd2;
+                end
             else
                 uart_tx_send <= 1'b0;
         end
         else
             uart_tx_send <= 1'b0;
     end
+
+    LED_STATUS #(25, 25'd25000000) instLED_STATUS(
+        clk_50,         //Main global clock
+        switch_state,   //Send data flag
+        GPIO_0_8        //Output Status LED
+        );
+    
 endmodule

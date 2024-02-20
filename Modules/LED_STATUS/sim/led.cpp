@@ -20,19 +20,10 @@ int main(int argc, char ** argv) {
 
   VLED_STATUS* top = new VLED_STATUS();
 
-  int data[3] = {45, 83, 56};
-  int cur_ind = 0;
-
   int tcycs = 0;
 
   for (int n = 0; n < 8000; n++)
-  {
-    tcycs = (tcycs+1) % 100;
-    if (tcycs < 50)
-      top->Clk_UART = 1;
-    else
-      top->Clk_UART = 0;
-    
+  {   
     top->Clk = 1;
     wait_n_cycles(10);
     top->eval();
@@ -41,21 +32,14 @@ int main(int argc, char ** argv) {
     wait_n_cycles(10);
     top->eval();
 
-    if (cur_ind < 2)
-    {
-      top->Data_TX = data[cur_ind++];
-      printf("Sending %d\n", top->Data_TX);
-      top->send_data = 1;
-    }
-    else if (n > 2500 && cur_ind < 3)
-    {
-      top->Data_TX = data[cur_ind++];
-      printf("Sending %d\n", top->Data_TX);
-      top->send_data = 1;
-    }
-    else
-      top->send_data = 0;
+    if (tcycs < 130)
+      top->state = 0;
+    else if (tcycs < 260)
+      top->state = 1;
+    else if (tcycs < 385)
+      top->state = 2;
 
+    tcycs++;
     main_time++;  
   }
 
