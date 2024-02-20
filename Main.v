@@ -1,23 +1,17 @@
 module main(
 	input CLOCK_50,
-	output GPIO_0_0,
-	
-	output GPIO_2_0,	//CLK
-	output GPIO_2_1,	//CLK
-	input GPIO_2_6,	//ACQ-RDY
-	output GPIO_2_4, 	//VNA-TRIG
-	
-	input GPIO_2_7,	//RST-Reset
 
     input GPIO_0_7,     //USB COM Module TX
     output GPIO_0_6,    //USB COM Module RX
 
     output GPIO_0_8,    //Status Panel LED
+    
+    input GPIO_0_5,     //ACQ Trigger FROM VNA
+    output GPIO_0_4,    //Trigger TO VNA
 
-
-	output GPIO_2_8,
-	output GPIO_2_10,
-	output GPIO_2_12,
+	output GPIO_0_1,
+	output GPIO_0_2,
+	output GPIO_0_3,
 
     output LED_0,
     output LED_1,
@@ -64,7 +58,7 @@ module main(
         UART_RX_Data,   //8-Bit byte
         UART_RX_new     //New data flag
         );
-    assign debug_LEDs = UART_RX_Data;
+    //assign debug_LEDs = UART_RX_Data;
 	 
     reg [1:0] switch_state;
 
@@ -102,6 +96,12 @@ module main(
                 uart_tx_send <= 1'b1;
                 switch_state <= 2'd2;
                 end
+            else if (UART_RX_Data == 8'b01110111)   //'w'
+                begin
+                uart_tx_data <= 8'd84;
+                uart_tx_send <= 1'b1;
+                switch_state <= 2'd3;
+                end
             else
                 uart_tx_send <= 1'b0;
         end
@@ -109,10 +109,21 @@ module main(
             uart_tx_send <= 1'b0;
     end
 
-    LED_STATUS #(25, 25'd25000000) instLED_STATUS(
+    LED_STATUS #(24, 24'd10000000) instLED_STATUS(
         clk_50,         //Main global clock
         switch_state,   //Send data flag
         GPIO_0_8        //Output Status LED
         );
     
+    SWITCHER instSWITCHER(
+        clk_50,         //Main global clock
+        GPIO_0_5,       //FROM VNA ACQ Ready
+        switch_state,   //Switch state demanded
+        uart_tx_send,   //New state change demanded
+        GPIO_0_4,       //TO VNA Trigger
+        GPIO_0_1,       //Switch Contact J1
+        GPIO_0_2,       //Switch Contact J2
+        GPIO_0_3        //Switch Contact J3
+    );
+
 endmodule

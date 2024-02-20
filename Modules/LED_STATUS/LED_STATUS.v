@@ -26,7 +26,7 @@ module LED_STATUS #(parameter cntr_width=3, parameter cntr_tick=3'd4)(
 			blink_state <= blink_state + 4'd1;
 		end
 
-		if (blink_state == 4'd10 || (blink_state == 4'd12 && state > 0) || (blink_state == 4'd14 && state > 1))
+		if (blink_state == 4'd10 || (blink_state == 4'd12 && state > 0) || (blink_state == 4'd14 && state > 1) || state == 2'd3)
 			led <= 1'b1;
 		else
 			led <= 1'b0;

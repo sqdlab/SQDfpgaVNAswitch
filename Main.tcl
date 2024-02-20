@@ -79,6 +79,7 @@ if {$make_assignments} {
 	set_global_assignment -name VERILOG_FILE Modules/UART_RX/UART_RX.v
 	set_global_assignment -name VERILOG_FILE Modules/UART_TX/UART_TX.v
 	set_global_assignment -name VERILOG_FILE Modules/LED_STATUS/LED_STATUS.v
+	set_global_assignment -name VERILOG_FILE Modules/SWITCHER/SWITCHER.v
 	set_global_assignment -name VERILOG_FILE Main.v
 	set_location_assignment PIN_R8 -to CLOCK_50
 	set_location_assignment PIN_A15 -to LED_0

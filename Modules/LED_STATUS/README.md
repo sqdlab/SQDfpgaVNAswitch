@@ -1,16 +1,16 @@
-# UART TX Module
+# LED Status Module
 
-This module simply transmits UART bytes via a 16-byte FIFO:
+This module blinks the panel LED depending on the state (1, 2 and 3 blinks for `state` being 0, 1 and 2 respectively):
 
 ```verilog
-UART_TX instUART_TX(
+LED_STATUS #(
+	cntr_width,	//Wait-time counter width
+	cntr_tick	//Wait-time counter value
+	) instLED_STATUS(
 	Clk,        //Main global clock
-	Clk_UART,   //Clock divided UART-clock phase-synchronous with Clk
-	send_data,  //Send data flag
-	Data_TX,    //8-Bit byte of data to send
-	is_busy,    //Busy flag
-	TX          //Output UART serial data stream
+	state, 		//2-bit state variable
+	led			//Output panel LED
     );
 ```
 
-Note that when `send_data` flag is made high the byte on `send_data` is clocked into the module's FIFO and readied for transfer. The `is_busy` flag is held high when the module is transmitting a byte. Note that data can be buffered into the module at any time (even during an output data transfer) as long as it does not overflow the 16-byte FIFO.
+Note that the `cntr_width` and `cntr_tick` parameters specify the number of clock ticks in which the LED stays on during a blink.
