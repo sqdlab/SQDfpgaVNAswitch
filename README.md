@@ -1,20 +1,18 @@
 # SQDfpgaVNAswitch
 
-Switching module to expand the number of ports in a Vector Network Analyser.
+Switching module to expand the number of ports in a Vector Network Analyser. Specifically:
 
-## Installation
+- This project takes a typical 4-port VNA with input and output triggers (e.g. *Agilent N5232A*, *Keysight PNA-L series* etc.) and multiplexes the output port into 3 ports.
+- Thus, one can measure a full 3x3 s-parameter matrix in 3 rapid switching cycles (with the main bottleneck being the VNA acquisition time).
+- The module operates via a simple serial USB COM port to a PC. It is thus, compatible with the drivers in [SQDToolz](https://github.com/sqdlab/SQDToolz).
 
-Install Quartus Prime along with the programmer. Then clone the repository in some appropriate folder:
+The implementation utilises:
 
-```
-git clone https://github.com/sqdlab/SQDfpgaVNAswitch.git
-```
+- *DE0-Nano* FPGA
+- High speed *RF-Lambda RFSP3TR0208G* triple-throw RF switch
+- USB COM port
 
-Locate the quartus bin folder (e.g. `/home/<USERNAME>/intelFPGA/18.0/quartus/bin/`). Now enter the cloned folder and run the TCL script:
+Two documentation classes exist for this project:
 
-```
-cd SQDfpgaVNAswitch
-/home/<USERNAME>/intelFPGA/18.0/quartus/bin/quartus_sh -t Main.tcl
-```
-
-This should build the Quartus project.
+- [User Documentation](docs/User/README.md)
+- [Developer Documentation](docs/Developer/README.md)

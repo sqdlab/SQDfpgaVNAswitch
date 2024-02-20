@@ -102,6 +102,11 @@ module main(
                 uart_tx_send <= 1'b1;
                 switch_state <= 2'd3;
                 end
+            else if (UART_RX_Data == 8'b01011010)   //'Z'
+                begin
+                uart_tx_data <= 8'd49 + {6'b0, switch_state};
+                uart_tx_send <= 1'b1;
+                end
             else
                 uart_tx_send <= 1'b0;
         end
