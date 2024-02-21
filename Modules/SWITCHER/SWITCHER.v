@@ -30,9 +30,9 @@ module SWITCHER(
 	switching = 1'b0;
 	end
 	
-	assign sw_J1 = (switch_state == 2'd0);
-	assign sw_J2 = (switch_state == 2'd1);
-	assign sw_J3 = (switch_state == 2'd2);
+	assign sw_J1 = ~(switch_state == 2'd0);
+	assign sw_J2 = ~(switch_state == 2'd1);
+	assign sw_J3 = ~(switch_state == 2'd2);
 
 	always @(posedge Clk) begin
 		ACQ_cleanup[0] <= VNA_RDY;
