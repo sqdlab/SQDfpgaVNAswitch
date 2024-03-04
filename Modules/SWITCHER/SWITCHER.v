@@ -66,20 +66,19 @@ module SWITCHER(
 						if (switching) begin
 							if (reset_state)
 								tick_state <= 1'd1;
-							else if (ACQ_cleanup[3:2] == 2'b01 || reset_state) begin
-								case (switch_state)
-									2'd0: switch_state <= 2'd1;
-									2'd1: switch_state <= 2'd2;
-									2'd2: switch_state <= 2'd0;
-									2'd3: switch_state <= 2'd0;
-								endcase
-							end
+							else if (ACQ_cleanup[3:2] == 2'b01)
+								begin
+									case (switch_state)
+										2'd0: switch_state <= 2'd1;
+										2'd1: switch_state <= 2'd2;
+										2'd2: switch_state <= 2'd0;
+										2'd3: switch_state <= 2'd0;
+									endcase
+									tick_state <= 1'd1;
+								end
+							else
+								tick_state <= 1'd0;
 						end
-						else
-							tick_state <= 1'd0;
-
-						if (switching && (ACQ_cleanup[3:2] == 2'b01 || reset_state))
-							tick_state <= 1'd1;
 						else
 							tick_state <= 1'd0;
 					end
